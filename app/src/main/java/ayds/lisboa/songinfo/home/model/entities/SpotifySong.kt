@@ -1,5 +1,7 @@
 package ayds.lisboa.songinfo.home.model.entities
 
+import java.text.DateFormatSymbols
+
 interface Song {
     val id: String
     val songName: String
@@ -23,8 +25,13 @@ data class SpotifySong(
   override val releaseDatePrecision: String,
   override var isLocallyStored: Boolean = false
 ) : Song {
-
-   // val year: String = releaseDate.split("-").first()
+    val writeReleaseDatePrecision: String = when(releaseDatePrecision){
+        "day" -> releaseDate.split("-").last() + "/" + releaseDate.split("-")[1] + "/" + releaseDate.split("-").first()
+        "month" -> DateFormatSymbols().months[releaseDate.split("-").last().toInt() - 1] + ", " + releaseDate.split("-").first()
+        else -> releaseDate.split("-").first() + if(esBisiesto(releaseDate.split("-").first().toInt())) " (leap year)" else " (not a leap year)"
+    }
+    
+    fun esBisiesto(n: Int) = (n % 4 == 0) && (n % 100 != 0 || n % 400 == 0)
 }
 
 object EmptySong : Song {
